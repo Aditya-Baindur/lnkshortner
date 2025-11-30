@@ -17,7 +17,12 @@
 			"database_name": "bitly",
 			"database_id": "b6e11d4d-1542-4a77-bd94-3c01c724395d"
 		}
-	]
+	],
+
+	"vars": {
+		"ADMIN_API_KEY": "dev-key"
+	}
+
 	/**
 	 * Smart Placement
 	 * Docs: https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement

@@ -1,9 +1,0 @@
-{
-  "d1_databases": [
-    {
-      "binding": "DB",
-      "database_name": "bitly",
-      "database_id": "b6e11d4d-1542-4a77-bd94-3c01c724395d"
-    }
-  ]
-}
