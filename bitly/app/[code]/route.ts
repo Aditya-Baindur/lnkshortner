@@ -1,9 +1,14 @@
+/// <reference types="@cloudflare/workers-types" />
+
+export const runtime = 'edge'
+
+declare const DB: D1Database
+
 export async function GET(
-  req: Request,
-  { params }: { params: { code: string } },
-  env: Env
-) {
-  const result = await env.DB
+  request: Request,
+  { params }: { params: { code: string } }
+): Promise<Response> {
+  const result = await DB
     .prepare('SELECT url FROM links WHERE code = ?')
     .bind(params.code)
     .first<{ url: string }>()

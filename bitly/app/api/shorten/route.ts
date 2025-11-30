@@ -9,26 +9,15 @@ type ShortenBody = {
   slug?: string
 }
 
-export async function POST(
-  req: Request,
-  ctx: unknown
-) {
-  // ✅ Cloudflare Pages injects env at runtime
-  const env = (ctx as { env: Env }).env
-
-  // ✅ Explicit typing (this fixes your error)
+export async function POST(req: Request) {
   const body = (await req.json()) as ShortenBody
   const { url, slug } = body
 
   if (!url || !url.startsWith('http')) {
-    return NextResponse.json(
-      { error: 'Invalid URL' },
-      { status: 400 }
-    )
+    return NextResponse.json({ error: 'Invalid URL' }, { status: 400 })
   }
 
   let code = slug?.trim()
-
   if (code) {
     if (!SLUG_REGEX.test(code)) {
       return NextResponse.json(
@@ -36,7 +25,6 @@ export async function POST(
         { status: 400 }
       )
     }
-
     if (RESERVED.includes(code.toLowerCase())) {
       return NextResponse.json(
         { error: 'Slug is reserved' },
@@ -47,19 +35,19 @@ export async function POST(
     code = nanoid(7)
   }
 
-  try {
-    await env.DB
-      .prepare('INSERT INTO links (code, url) VALUES (?, ?)')
-      .bind(code, url)
-      .run()
-  } catch {
-    return NextResponse.json(
-      { error: 'Slug already taken' },
-      { status: 409 }
-    )
+  const res = await fetch(`${process.env.SHORTENER_API}/shorten`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ code, url }),
+  })
+
+  const data = await res.json()
+
+  if (!res.ok) {
+    return NextResponse.json(data, { status: res.status })
   }
 
   return NextResponse.json({
-    shortUrl: `${env.BASE_URL}/${code}`,
+    shortUrl: `${process.env.BASE_URL}/${code}`,
   })
 }
