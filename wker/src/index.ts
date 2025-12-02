@@ -1,6 +1,8 @@
 export interface Env {
 	DB: D1Database;
 	ADMIN_API_KEY: string;
+	ABK: string;
+	PUBLIC_BASE_URL: string;
 }
 
 export default {
@@ -13,6 +15,33 @@ export default {
 			if (auth !== `Bearer ${env.ADMIN_API_KEY}`) {
 				return Response.json({ error: 'Unauthorized' }, { status: 401 });
 			}
+		}
+
+		// ----- GET ALL SLUGS -----
+		if (req.method === 'GET' && url.pathname === '/api/slugs') {
+			const { results } = await env.DB.prepare(
+				`
+						SELECT 
+							id,
+							code,
+							url,
+							clicks,
+							created_at
+						FROM links
+						ORDER BY created_at DESC
+					`
+			).all();
+
+			return Response.json({
+				slugs: results.map((r) => ({
+					id: r.id,
+					code: r.code,
+					url: r.url,
+					shortUrl: `${env.PUBLIC_BASE_URL}/${r.code}`,
+					clicks: r.clicks,
+					createdAt: r.created_at,
+				})),
+			});
 		}
 
 		// ----- CREATE SHORT LINK -----
@@ -31,8 +60,25 @@ export default {
 			}
 
 			return Response.json({
-				shortUrl: `${url.origin}/${code}`,
+				shortUrl: `${env.PUBLIC_BASE_URL}/${code}`,
 			});
+		}
+
+		// ----- DELETE SHORT LINK -----
+		if (req.method === 'POST' && url.pathname === '/api/delete') {
+			const body = await req.json<{ code?: string }>();
+
+			if (!body.code) {
+				return Response.json({ error: 'Slug code required' }, { status: 400 });
+			}
+
+			const result = await env.DB.prepare('DELETE FROM links WHERE code = ?').bind(body.code).run();
+
+			if (result.meta.changes === 0) {
+				return Response.json({ error: 'Slug not found' }, { status: 404 });
+			}
+
+			return Response.json({ success: true });
 		}
 
 		// ----- REDIRECT -----

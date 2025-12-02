@@ -8,28 +8,20 @@ import { Label } from '@/components/ui/label';
 import { Check, Copy, Loader2, Link } from 'lucide-react';
 
 export default function Home() {
-	const [url, setUrl] = useState('');
-	const [slug, setSlug] = useState('');
-	const [shortUrl, setShortUrl] = useState('');
+	const [getSlug, setgetSlug] = useState('');
 	const [error, setError] = useState('');
 	const [loading, setLoading] = useState(false);
 	const [copied, setCopied] = useState(false);
 
 	async function create() {
-		if (!url.startsWith('http')) {
-			setError('Please enter a valid URL starting with http or https');
-			return;
-		}
-
 		setError('');
-		setShortUrl('');
+		setgetSlug('');
 		setCopied(false);
 		setLoading(true);
 
 		const res = await fetch('/api/shorten', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ url, slug: slug || undefined }),
 		});
 
 		const data = await res.json();
@@ -40,11 +32,11 @@ export default function Home() {
 			return;
 		}
 
-		setShortUrl(data.shortUrl);
+		setgetSlug(data.getSlug);
 	}
 
 	async function copy() {
-		await navigator.clipboard.writeText(shortUrl);
+		await navigator.clipboard.writeText(getSlug);
 		setCopied(true);
 		setTimeout(() => setCopied(false), 2000);
 	}
@@ -55,33 +47,18 @@ export default function Home() {
 				<CardHeader>
 					<CardTitle className="flex items-center gap-2">
 						<Link className="h-5 w-5 text-neutral-600" />
-						Simple URL Shortener
+						Get all the slugs
 					</CardTitle>
-					<CardDescription>Create clean, shareable short links in seconds.</CardDescription>
 				</CardHeader>
 
 				<CardContent className="space-y-4">
-					{/* URL */}
-					<div className="space-y-1">
-						<Label htmlFor="url">Long URL</Label>
-						<Input id="url" placeholder="https://example.com" value={url} onChange={(e) => setUrl(e.target.value)} />
-					</div>
-
-					{/* Slug */}
-					<div className="space-y-1">
-						<Label htmlFor="slug">
-							Custom Slug <span className="text-muted-foreground">(optional)</span>
-						</Label>
-						<Input id="slug" placeholder="my-link" value={slug} onChange={(e) => setSlug(e.target.value)} />
-					</div>
-
 					{/* Error */}
 					{error && <p className="text-sm text-red-600">{error}</p>}
 
 					{/* Success */}
-					{shortUrl && (
+					{getSlug && (
 						<div className="rounded-md border bg-green-50 p-3 flex items-center justify-between gap-2">
-							<p className="text-sm text-green-700 break-all">{shortUrl}</p>
+							<p className="text-sm text-green-700 break-all">{getSlug}</p>
 							<Button variant="ghost" size="icon" onClick={copy}>
 								{copied ? <Check className="h-4 w-4 text-green-600" /> : <Copy className="h-4 w-4" />}
 							</Button>
