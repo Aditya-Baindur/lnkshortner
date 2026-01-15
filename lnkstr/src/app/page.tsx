@@ -5,7 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Check, Copy, Loader2, Link } from 'lucide-react';
+import { Check, Copy, Loader2, Settings } from 'lucide-react';
+import Link from 'next/link';
 
 export default function Home() {
 	const [url, setUrl] = useState('');
@@ -50,6 +51,8 @@ export default function Home() {
 	}
 
 	return (
+		<>
+		<header className='flex flex-1 justify-left h-10'><Link href='/slugs'><Settings />Slugs</Link></header>
 		<main className="min-h-screen flex items-center justify-center bg-neutral-50 px-4">
 			<Card className="w-full max-w-lg shadow-lg">
 				<CardHeader>
@@ -97,5 +100,6 @@ export default function Home() {
 				</CardFooter>
 			</Card>
 		</main>
+		</>
 	);
 }
