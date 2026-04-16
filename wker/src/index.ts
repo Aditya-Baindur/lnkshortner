@@ -10,6 +10,12 @@ export default {
 		const url = new URL(req.url);
 
 		// ----- AUTH FOR API ROUTES -----
+		if (url.pathname.startsWith('/')) {
+			const url = env.PUBLIC_BASE_URL
+			return Response.redirect(url)
+		}
+
+		// ----- AUTH FOR API ROUTES -----
 		if (url.pathname.startsWith('/api')) {
 			const auth = req.headers.get('authorization');
 			if (auth !== `Bearer ${env.ADMIN_API_KEY}`) {
