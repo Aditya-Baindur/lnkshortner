@@ -3,18 +3,11 @@ export interface Env {
 	ADMIN_API_KEY: string;
 	ABK: string;
 	PUBLIC_BASE_URL: string;
-	ROOT_URL:string; 
 }
 
 export default {
 	async fetch(req: Request, env: Env) {
 		const url = new URL(req.url);
-
-		// ----- AUTH FOR API ROUTES -----
-		if (url.pathname.startsWith('/')) {
-			return Response.redirect(env.ROOT_URL, 302);
-		}
-
 
 		// ----- AUTH FOR API ROUTES -----
 		if (url.pathname.startsWith('/api')) {
@@ -102,7 +95,7 @@ export default {
 
 			return Response.redirect(row.url, 302);
 		}
-		
+
 		return Response.json({ status: 'ok' });
 	},
 };
