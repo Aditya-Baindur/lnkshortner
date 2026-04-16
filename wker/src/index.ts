@@ -3,6 +3,7 @@ export interface Env {
 	ADMIN_API_KEY: string;
 	ABK: string;
 	PUBLIC_BASE_URL: string;
+	PUBLIC_ROOT_URL:string;
 }
 
 export default {
@@ -10,9 +11,9 @@ export default {
 		const url = new URL(req.url);
 
 		if (url.pathname === '/') {
-			return Response.redirect(env.PUBLIC_BASE_URL);
+			return Response.redirect(env.PUBLIC_ROOT_URL);
 		}
-		
+
 		// ----- AUTH FOR API ROUTES -----
 		if (url.pathname.startsWith('/api')) {
 			const auth = req.headers.get('authorization');
