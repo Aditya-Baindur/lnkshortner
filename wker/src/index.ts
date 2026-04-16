@@ -9,12 +9,10 @@ export default {
 	async fetch(req: Request, env: Env) {
 		const url = new URL(req.url);
 
-		// ----- AUTH FOR API ROUTES -----
-		if (url.pathname.startsWith('/')) {
-			const url = env.PUBLIC_BASE_URL
-			return Response.redirect(url)
+		if (url.pathname === '/') {
+			return Response.redirect(env.PUBLIC_BASE_URL);
 		}
-
+		
 		// ----- AUTH FOR API ROUTES -----
 		if (url.pathname.startsWith('/api')) {
 			const auth = req.headers.get('authorization');
